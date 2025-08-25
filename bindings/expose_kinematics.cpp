@@ -9,5 +9,6 @@ void expose_kinematics() {
   class__<Kinematics>("Kinematics", init<double, double>())
       .def_readwrite("motor_arm_length", &Kinematics::motor_arm_length)
       .def_readwrite("rod_length", &Kinematics::rod_length)
-      .def("add_branch", &Kinematics::add_branch);
+      .def("add_branch", &Kinematics::add_branch)
+      .def("inverse_kinematics", &Kinematics::inverse_kinematics);
 }

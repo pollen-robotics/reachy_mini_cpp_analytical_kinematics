@@ -11,6 +11,9 @@ struct Kinematics {
 
     // Motor pose in the world
     Eigen::Affine3d T_world_motor;
+
+    // Solution sign (1.0 or -1.0)
+    double solution = 1.0;
   };
 
   // Kinematic branches
@@ -29,10 +32,14 @@ struct Kinematics {
    * @param T_world_motor transformation matrix from motor to world frame
    */
   void add_branch(Eigen::Vector3d branch_platform,
-                  Eigen::Affine3d T_world_motor);
+                  Eigen::Affine3d T_world_motor, double solution = 1.0);
 
-
-  // Eigen::VectorXd inverse_kinematics(Eigen::Affine3d
+  /**
+   * @brief Computes the inverse kinematics for the given platform pose
+   * @param T_world_platform transformation matrix from platform to world frame
+   * @return joint angles that achieve the desired platform pose
+   */
+  Eigen::VectorXd inverse_kinematics(Eigen::Affine3d T_world_platform);
 
   // Kinematics dimensions
   double motor_arm_length;

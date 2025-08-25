@@ -4,7 +4,9 @@ project(reachy_mini_kinematics)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package (Eigen3 3 REQUIRED NO_MODULE)
 find_package(eigenpy REQUIRED)
 
 if (NOT PYTHON_SITELIB)
@@ -28,6 +30,7 @@ add_library(libreachy_mini_kinematics SHARED ${SOURCES})
 
 target_link_libraries(libreachy_mini_kinematics PUBLIC
     eigenpy::eigenpy
+    Eigen3::Eigen
 )
 
 target_include_directories(libreachy_mini_kinematics PUBLIC
@@ -38,6 +41,7 @@ set(MODULE_SOURCES
     bindings/module.cpp
 
     bindings/expose_eigen.cpp
+    bindings/expose_kinematics.cpp
 )
 
 add_library(reachy_mini_kinematics MODULE ${MODULE_SOURCES})
@@ -50,7 +54,7 @@ target_include_directories(reachy_mini_kinematics PRIVATE ${Python3_INCLUDE_DIRS
 add_custom_command(
     TARGET reachy_mini_kinematics POST_BUILD
     COMMAND doxystub
-        --module perloc
+        --module reachy_mini_kinematics
         --doxygen_directory "${CMAKE_CURRENT_SOURCE_DIR}"
         --output "${CMAKE_BINARY_DIR}/${PYTHON_SITELIB}/reachy_mini_kinematics.pyi"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/${PYTHON_SITELIB}"

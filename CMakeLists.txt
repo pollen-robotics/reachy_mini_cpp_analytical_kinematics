@@ -60,3 +60,8 @@ add_custom_command(
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/${PYTHON_SITELIB}"
     COMMENT "Generating stubs..."
 )
+
+install(TARGETS libreachy_mini_kinematics DESTINATION lib)
+install(TARGETS reachy_mini_kinematics DESTINATION ${PYTHON_SITELIB})
+install(FILES ${CMAKE_BINARY_DIR}/${PYTHON_SITELIB}/reachy_mini_kinematics.pyi DESTINATION ${PYTHON_SITELIB})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/${PYTHON_SITELIB}/reachy_mini_kinematics_utils DESTINATION ${PYTHON_SITELIB})

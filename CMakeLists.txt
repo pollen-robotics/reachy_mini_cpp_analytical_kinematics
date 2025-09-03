@@ -61,6 +61,14 @@ add_custom_command(
     COMMENT "Generating stubs..."
 )
 
+if (APPLE)
+set_target_properties(reachy_mini_kinematics PROPERTIES INSTALL_RPATH "@loader_path/../..")
+set_target_properties(libreachy_mini_kinematics PROPERTIES INSTALL_RPATH "@loader_path")
+else()
+set_target_properties(reachy_mini_kinematics PROPERTIES INSTALL_RPATH "\$ORIGIN/../..")
+set_target_properties(libreachy_mini_kinematics PROPERTIES INSTALL_RPATH "\$ORIGIN")
+endif()
+
 install(TARGETS libreachy_mini_kinematics DESTINATION lib)
 install(TARGETS reachy_mini_kinematics DESTINATION ${PYTHON_SITELIB})
 install(FILES ${CMAKE_BINARY_DIR}/${PYTHON_SITELIB}/reachy_mini_kinematics.pyi DESTINATION ${PYTHON_SITELIB})

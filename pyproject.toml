@@ -2,8 +2,7 @@
 build-backend = "cmeel"
 requires = [
   "cmeel[build]",
-  "cmeel-eigen",
-  "eigenpy[build]",
+  "pin[build]==3.4.0",
   "doxystub >= 0.1.7",
   "cmake<4"
 ]
@@ -11,7 +10,11 @@ requires = [
 [project]
 authors = [{ email = "team@rhoban.com", name = "Rhoban team" }]
 classifiers = []
-dependencies = ["eigen", "eigenpy"]
+dependencies = [
+    "eigen",
+    "eigenpy",
+    "meshcat"
+]
 description = "Reachy mini kinematics library (POC)"
 license = "MIT"
 name = "poc_reachy_mini_kinematics"

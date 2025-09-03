@@ -2,7 +2,7 @@
 build-backend = "cmeel"
 requires = [
   "cmeel[build]",
-  "cmeel-eigen[build]",
+  "cmeel-eigen",
   "eigenpy[build]",
   "doxystub >= 0.1.7",
   "cmake<4"

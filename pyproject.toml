@@ -1,0 +1,47 @@
+[build-system]
+build-backend = "cmeel"
+requires = [
+  "cmeel[build]",
+  "eigenpy",
+  "doxystub >= 0.1.7",
+  "cmake<4"
+]
+
+[project]
+authors = [{ email = "team@rhoban.com", name = "Rhoban team" }]
+classifiers = []
+dependencies = []
+description = "Reachy mini kinematics library (POC)"
+license = "MIT"
+name = "poc_reachy_mini_kinematics"
+requires-python = ">= 3.8"
+version = "0.0.1"
+
+[project.urls]
+changelog = "https://github.com/gregwar/reachy_mini_kinematics/blob/main/CHANGELOG.md"
+homepage = "https://github.com/gregwar/reachy_mini_kinematics"
+repository = "https://github.com/gregwar/reachy_mini_kinematics"
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.tomlsort]
+all = true
+
+[tool.cmeel]
+run-tests = false
+
+
+[tool.cibuildwheel.macos]
+before-all = "brew install --formula doxygen"
+
+[tool.cibuildwheel.linux]
+before-all = "yum install -y doxygen"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux*"
+before-all = "apk add doxygen"
+

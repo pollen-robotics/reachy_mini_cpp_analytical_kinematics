@@ -14,6 +14,9 @@ struct Kinematics {
 
     // Solution sign (1.0 or -1.0)
     double solution = 1.0;
+
+    // Internal 3x6 jacobian matrix used for forward kinematics
+    Eigen::MatrixXd jacobian;
   };
 
   // Kinematic branches
@@ -41,8 +44,27 @@ struct Kinematics {
    */
   Eigen::VectorXd inverse_kinematics(Eigen::Affine3d T_world_platform);
 
+  /**
+   * @brief Resets the forward kinematics estimation
+   * @param T_world_platform
+   */
+  void reset_forward_kinematics(Eigen::Affine3d T_world_platform);
+
+  /**
+   * @brief Update the platform pose estimation based on joint angles
+   * @param joint_angles vector of joint angles
+   */
+  Eigen::Affine3d forward_kinematics(Eigen::VectorXd joint_angles);
+
   // Kinematics dimensions
   double motor_arm_length;
   double rod_length;
+
+  // Current platform estimation for forward kinematics
+  Eigen::Affine3d T_world_platform;
+
+  // Max FK deltas
+  double fk_max_delta_linear = 3e-3; // [m]
+  double fk_max_delta_angular = 1e-1; // [rad]
 };
 } // namespace reachy_mini_kinematics

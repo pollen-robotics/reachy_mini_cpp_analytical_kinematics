@@ -1,13 +1,28 @@
 #include "kinematics.h"
+#include <iostream>
 
 namespace reachy_mini_kinematics {
 
 Kinematics::Kinematics(double motor_arm_length, double rod_length)
-    : motor_arm_length(motor_arm_length), rod_length(rod_length) {}
+    : motor_arm_length(motor_arm_length), rod_length(rod_length) {
+  T_world_platform = Eigen::Affine3d::Identity();
+}
 
 void Kinematics::add_branch(Eigen::Vector3d branch_platform,
                             Eigen::Affine3d T_world_motor, double solution) {
-  branches.push_back({branch_platform, T_world_motor, solution});
+
+  // Building a 3x6 jacobian relating platform velocity to branch anchor point
+  // linear velocity Linear velocity is kept as identity and angular velocity is
+  // using Varignon's formula w x p, which Is anti-symmetric -p x w and used in
+  // matrix form [-p]
+  Eigen::MatrixXd jacobian = Eigen::MatrixXd::Zero(3, 6);
+  jacobian.block(0, 0, 3, 3) = Eigen::Matrix3d::Identity();
+
+  Eigen::Vector3d p = -branch_platform;
+  jacobian.block(0, 3, 3, 3) << 0, -p.z(), p.y(), p.z(), 0, -p.x(), -p.y(),
+      p.x(), 0;
+
+  branches.push_back({branch_platform, T_world_motor, solution, jacobian});
 }
 
 Eigen::VectorXd
@@ -44,5 +59,62 @@ Kinematics::inverse_kinematics(Eigen::Affine3d T_world_platform) {
   }
 
   return joint_angles;
+}
+
+void Kinematics::reset_forward_kinematics(Eigen::Affine3d T_world_platform_) {
+  this->T_world_platform = T_world_platform_;
+}
+
+Eigen::Affine3d Kinematics::forward_kinematics(Eigen::VectorXd joint_angles) {
+  if (branches.size() != 6) {
+    throw std::runtime_error("Forward kinematics requires exactly 6 branches");
+  }
+
+  Eigen::MatrixXd J = Eigen::MatrixXd::Zero(6, 6);
+  Eigen::VectorXd errors = Eigen::VectorXd::Zero(6);
+
+  for (int k = 0; k < branches.size(); k++) {
+    Branch &branch = branches[k];
+
+    // Computing the position of motor arm in the motor frame
+    Eigen::Vector3d arm_motor =
+        motor_arm_length *
+        Eigen::Vector3d(cos(joint_angles[k]), sin(joint_angles[k]), 0);
+
+    // Expressing the tip of motor arm in the platform frame
+    Eigen::Vector3d arm_platform =
+        T_world_platform.inverse() * branch.T_world_motor * arm_motor;
+
+    // Computing the current distance
+    double current_distance = (arm_platform - branch.branch_platform).norm();
+
+    // Computing the arm-to-branch vector in platform frame
+    Eigen::Vector3d armBranch_platform = branch.branch_platform - arm_platform;
+
+    // Computing the jacobian of the distance
+    J.block(k, 0, 1, 6) = armBranch_platform.transpose() * branch.jacobian;
+    errors(k) = rod_length - current_distance;
+  }
+
+  Eigen::VectorXd V = 1e-1 * J.inverse() * errors;
+
+  if (V.head(3).norm() > fk_max_delta_linear) {
+    V.head(3) = V.head(3).normalized() * fk_max_delta_linear;
+  }
+  if (V.tail(3).norm() > fk_max_delta_angular) {
+    V.tail(3) = V.tail(3).normalized() * fk_max_delta_angular;
+  }
+
+  Eigen::Affine3d T = Eigen::Affine3d::Identity();
+  T.translation() = V.head(3);
+
+  double norm = V.tail(3).norm();
+  if (fabs(norm) > 1e-6) {
+    T.linear() =
+        Eigen::AngleAxisd(norm, V.tail(3).normalized()).toRotationMatrix();
+  }
+  T_world_platform = T_world_platform * T;
+
+  return T_world_platform;
 }
 } // namespace reachy_mini_kinematics

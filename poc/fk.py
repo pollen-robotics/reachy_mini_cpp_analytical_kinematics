@@ -17,7 +17,7 @@ for motor in motors:
         1 if motor["solution"] else -1,
     )
 
-T_world_platform = tf.translation_matrix((0, 0, 0.177))
+T_world_platform = tf.translation_matrix((0, 0, head_z_offset))
 
 kin.reset_forward_kinematics(T_world_platform)
 joints = np.array([0.3, 0., 0., 0., 0., 0.])
@@ -28,4 +28,5 @@ for k in range(10_000):
 t1 = time.time()
 print(f"Computation time per call: {((t1-t0)/10_000)*1e6:.3f} us")
 
+T[2, 3] -= head_z_offset
 print(T)

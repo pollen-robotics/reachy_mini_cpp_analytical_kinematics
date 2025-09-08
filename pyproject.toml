@@ -18,7 +18,7 @@ description = "Reachy mini kinematics library (POC)"
 license = "MIT"
 name = "poc_reachy_mini_kinematics"
 requires-python = ">= 3.8"
-version = "0.0.4"
+version = "0.0.5"
 
 [project.urls]
 changelog = "https://github.com/gregwar/reachy_mini_kinematics/blob/main/CHANGELOG.md"

@@ -9,13 +9,12 @@ void expose_kinematics() {
   class__<Kinematics>("Kinematics", init<double, double>())
       .def_readwrite("motor_arm_length", &Kinematics::motor_arm_length)
       .def_readwrite("rod_length", &Kinematics::rod_length)
-      .def_readwrite("fk_max_delta_linear", &Kinematics::fk_max_delta_linear)
-      .def_readwrite("fk_max_delta_angular", &Kinematics::fk_max_delta_angular)
+      .def_readwrite("line_search_maximum_iterations",
+                     &Kinematics::line_search_maximum_iterations)
       .def("add_branch", &Kinematics::add_branch)
       .def("inverse_kinematics", &Kinematics::inverse_kinematics)
       .def("reset_forward_kinematics", &Kinematics::reset_forward_kinematics)
       .def("forward_kinematics", &Kinematics::forward_kinematics)
       .def("wrap_angle", &Kinematics::wrap_angle)
-      .staticmethod("wrap_angle")
-      ;
+      .staticmethod("wrap_angle");
 }

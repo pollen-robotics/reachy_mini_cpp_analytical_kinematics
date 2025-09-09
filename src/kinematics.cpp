@@ -78,6 +78,7 @@ Eigen::Affine3d Kinematics::forward_kinematics(Eigen::VectorXd joint_angles) {
 
   Eigen::MatrixXd J = Eigen::MatrixXd::Zero(6, 6);
   Eigen::VectorXd errors = Eigen::VectorXd::Zero(6);
+  std::vector<Eigen::Vector3d> arms_motor;
 
   for (int k = 0; k < branches.size(); k++) {
     Branch &branch = branches[k];
@@ -86,6 +87,7 @@ Eigen::Affine3d Kinematics::forward_kinematics(Eigen::VectorXd joint_angles) {
     Eigen::Vector3d arm_motor =
         motor_arm_length *
         Eigen::Vector3d(cos(joint_angles[k]), sin(joint_angles[k]), 0);
+    arms_motor.push_back(arm_motor);
 
     // Expressing the tip of motor arm in the platform frame
     Eigen::Vector3d arm_platform =
@@ -102,24 +104,42 @@ Eigen::Affine3d Kinematics::forward_kinematics(Eigen::VectorXd joint_angles) {
     errors(k) = rod_length - current_distance;
   }
 
-  Eigen::VectorXd V = 1e-1 * J.inverse() * errors;
+  // If the error is sufficiently high, performs a line-search along the
+  // direction given by the jacobian inverse
+  if (errors.norm() > 1e-6) {
+    Eigen::VectorXd V = J.inverse() * errors;
 
-  if (V.head(3).norm() > fk_max_delta_linear) {
-    V.head(3) = V.head(3).normalized() * fk_max_delta_linear;
-  }
-  if (V.tail(3).norm() > fk_max_delta_angular) {
-    V.tail(3) = V.tail(3).normalized() * fk_max_delta_angular;
-  }
+    for (int i = 0; i < line_search_maximum_iterations; i++) {
+      Eigen::Affine3d T = Eigen::Affine3d::Identity();
+      T.translation() = V.head(3);
 
-  Eigen::Affine3d T = Eigen::Affine3d::Identity();
-  T.translation() = V.head(3);
+      double norm = V.tail(3).norm();
+      if (fabs(norm) > 1e-6) {
+        T.linear() =
+            Eigen::AngleAxisd(norm, V.tail(3).normalized()).toRotationMatrix();
+      }
+      Eigen::Affine3d T_world_platform2 = T_world_platform * T;
 
-  double norm = V.tail(3).norm();
-  if (fabs(norm) > 1e-6) {
-    T.linear() =
-        Eigen::AngleAxisd(norm, V.tail(3).normalized()).toRotationMatrix();
+      Eigen::VectorXd new_errors(6);
+      for (int k = 0; k < branches.size(); k++) {
+        Branch &branch = branches[k];
+
+        Eigen::Vector3d arm_platform =
+            T_world_platform2.inverse() * branch.T_world_motor * arms_motor[k];
+        double current_distance =
+            (arm_platform - branch.branch_platform).norm();
+
+        new_errors(k) = rod_length - current_distance;
+      }
+
+      if (new_errors.norm() < errors.norm()) {
+        T_world_platform = T_world_platform2;
+        break;
+      } else {
+        V = V * 0.5;
+      }
+    }
   }
-  T_world_platform = T_world_platform * T;
 
   return T_world_platform;
 }

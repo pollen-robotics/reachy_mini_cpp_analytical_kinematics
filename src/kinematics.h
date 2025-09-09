@@ -63,11 +63,10 @@ struct Kinematics {
   // Current platform estimation for forward kinematics
   Eigen::Affine3d T_world_platform;
 
-  // Max FK deltas
-  double fk_max_delta_linear = 3e-3;  // [m]
-  double fk_max_delta_angular = 1e-1; // [rad]
-
   static double wrap_angle(double angle);
+
+  // Maximum iterations for line search in forward kinematics
+  int line_search_maximum_iterations = 16;
 };
 
 } // namespace reachy_mini_kinematics

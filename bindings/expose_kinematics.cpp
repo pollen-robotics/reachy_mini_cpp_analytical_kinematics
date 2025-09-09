@@ -14,5 +14,8 @@ void expose_kinematics() {
       .def("add_branch", &Kinematics::add_branch)
       .def("inverse_kinematics", &Kinematics::inverse_kinematics)
       .def("reset_forward_kinematics", &Kinematics::reset_forward_kinematics)
-      .def("forward_kinematics", &Kinematics::forward_kinematics);
+      .def("forward_kinematics", &Kinematics::forward_kinematics)
+      .def("wrap_angle", &Kinematics::wrap_angle)
+      .staticmethod("wrap_angle")
+      ;
 }

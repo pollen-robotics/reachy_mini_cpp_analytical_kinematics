@@ -3,6 +3,10 @@
 
 namespace reachy_mini_kinematics {
 
+double Kinematics::wrap_angle(double angle) {
+  return angle - (2 * M_PI) * std::floor((angle + M_PI) * (1. / (2 * M_PI)));
+}
+
 Kinematics::Kinematics(double motor_arm_length, double rod_length)
     : motor_arm_length(motor_arm_length), rod_length(rod_length) {
   T_world_platform = Eigen::Affine3d::Identity();
@@ -56,6 +60,8 @@ Kinematics::inverse_kinematics(Eigen::Affine3d T_world_platform) {
                      pow(rp, 4) + 2 * pow(rp, 2) * pow(rs, 2) - pow(rs, 4))),
             (pow(px, 2) + 2 * px * rs + pow(py, 2) + pow(pz, 2) - pow(rp, 2) +
              pow(rs, 2)));
+
+    joint_angles[k] = wrap_angle(joint_angles[k]);
   }
 
   return joint_angles;

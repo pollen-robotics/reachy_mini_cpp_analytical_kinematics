@@ -2,7 +2,7 @@
 #include "kinematics.h"
 #include <eigenpy/eigen-to-python.hpp>
 
-using namespace reachy_mini_kinematics;
+using namespace reachy_mini_cpp_kinematics;
 using namespace boost::python;
 
 void expose_kinematics() {

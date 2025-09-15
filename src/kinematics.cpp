@@ -1,7 +1,7 @@
 #include "kinematics.h"
 #include <iostream>
 
-namespace reachy_mini_kinematics {
+namespace reachy_mini_cpp_kinematics {
 
 double Kinematics::wrap_angle(double angle) {
   return angle - (2 * M_PI) * std::floor((angle + M_PI) * (1. / (2 * M_PI)));
@@ -143,4 +143,4 @@ Eigen::Affine3d Kinematics::forward_kinematics(Eigen::VectorXd joint_angles) {
 
   return T_world_platform;
 }
-} // namespace reachy_mini_kinematics
+} // namespace reachy_mini_cpp_kinematics

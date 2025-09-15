@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <vector>
 
-namespace reachy_mini_kinematics {
+namespace reachy_mini_cpp_kinematics {
 struct Kinematics {
   struct Branch {
     // Branch position expressed in the platform frame
@@ -69,4 +69,4 @@ struct Kinematics {
   int line_search_maximum_iterations = 16;
 };
 
-} // namespace reachy_mini_kinematics
+} // namespace reachy_mini_cpp_kinematics

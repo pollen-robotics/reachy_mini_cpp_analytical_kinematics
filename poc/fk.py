@@ -1,7 +1,7 @@
 import time
 import json
 import numpy as np
-import reachy_mini_kinematics as rk
+import reachy_mini_cpp_kinematics as rk
 import meshcat.transformations as tf
 
 kin = rk.Kinematics(0.038, 0.09)

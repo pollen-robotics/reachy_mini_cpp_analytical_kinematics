@@ -4,7 +4,7 @@
 
 #include "module.h"
 
-BOOST_PYTHON_MODULE(reachy_mini_kinematics) {
+BOOST_PYTHON_MODULE(reachy_mini_cpp_kinematics) {
   using namespace boost::python;
 
   expose_eigen();

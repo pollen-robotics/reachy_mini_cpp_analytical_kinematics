@@ -10,15 +10,12 @@ requires = [
 [project]
 authors = [{ email = "team@rhoban.com", name = "Rhoban team" }]
 classifiers = []
-dependencies = [
-    "pin==3.4.0",
-    "meshcat"
-]
+dependencies = []
 description = "Reachy mini cpp kinematics library "
 license = "MIT"
 name = "reachy_mini_cpp_kinematics"
 requires-python = ">= 3.8"
-version = "0.0.9"
+version = "0.0.10"
 
 [project.urls]
 changelog = "https://github.com/pollen-robotics/reachy_mini_cpp_kinematics/blob/main/CHANGELOG.md"
